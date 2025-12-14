@@ -1,10 +1,13 @@
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/navbar";
+import { Navbar, NavbarBrand, NavbarContent } from "@heroui/navbar";
 import { Button } from "@heroui/button";
 import Link from "next/link";
 import { GiMatchTip } from "react-icons/gi";
 import NavLink from "./NavLink";
+import { auth } from "@/src/auth";
+import UserMenu from "./UserMenu";
 
-export default function TopNav() {
+export default async function TopNav() {
+  const session = await auth();
   return (
     <Navbar
       maxWidth="xl"
@@ -20,9 +23,11 @@ export default function TopNav() {
     >
       <NavbarBrand>
         <GiMatchTip size={40} className="text-gray-200" />
-        <div className="font-bold text-3xl text-gray-200">
-          <span>Chatty</span>
-        </div>
+        <Link href="/home">
+          <div className="font-bold text-3xl text-gray-200">
+            <span>Chatty</span>
+          </div>
+        </Link>
       </NavbarBrand>
       <NavbarContent justify="center">
         <NavLink href="/members" label="Matches" />
@@ -30,16 +35,22 @@ export default function TopNav() {
         <NavLink href="/messages" label="Messages" />
       </NavbarContent>
       <NavbarContent justify="end">
-        <Link href={"/login"}>
-          <Button color="default" variant="bordered" className="text-white">
-            Login
-          </Button>
-        </Link>
-        <Link href={"/register"}>
-          <Button color="default" variant="bordered" className="text-white">
-            SignUp
-          </Button>
-        </Link>
+        {session?.user ? (
+          <UserMenu user={session.user} />
+        ) : (
+          <>
+            <Link href={"/login"}>
+              <Button color="default" variant="bordered" className="text-white">
+                Login
+              </Button>
+            </Link>
+            <Link href={"/register"}>
+              <Button color="default" variant="bordered" className="text-white">
+                SignUp
+              </Button>
+            </Link>
+          </>
+        )}
       </NavbarContent>
     </Navbar>
   );

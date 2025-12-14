@@ -10,19 +10,34 @@ import {
   RegisterSchema,
 } from "@/src/lib/schemas/registerSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { registerUser } from "../../actions/authActions";
 
 export default function RegisterForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    setError,
+    formState: { errors, isValid, isSubmitting },
   } = useForm<RegisterSchema>({
-    resolver: zodResolver(registerSchema),
+    // resolver: zodResolver(registerSchema),
     mode: "onChange",
   });
 
-  const onSubmit = (data: RegisterSchema) => {
-    console.log(data);
+  const onSubmit = async (data: RegisterSchema) => {
+    const result = await registerUser(data);
+
+    if (result.status === "success") {
+      console.log("User register successfully");
+    } else {
+      if (Array.isArray(result.error)) {
+        result.error.forEach((e) => {
+          const fieldName = e.path[0] as keyof RegisterSchema;
+          setError(fieldName, { type: "manual", message: e.message });
+        });
+      } else {
+        setError("root", { type: "manual", message: result.error });
+      }
+    }
   };
 
   return (
@@ -64,7 +79,11 @@ export default function RegisterForm() {
               isInvalid={!!errors.password}
               errorMessage={errors.password?.message}
             />
+            {errors.root && (
+              <p className="text-danger text-sm">{errors.root.message}</p>
+            )}
             <Button
+              isLoading={isSubmitting}
               isDisabled={!isValid}
               fullWidth
               color="secondary"
