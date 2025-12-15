@@ -43,7 +43,7 @@ export async function signInUser(
 
 //===================Register a User========================
 export async function signOutUser() {
-  await signOut({ redirectTo: "/" });
+  await signOut({ redirectTo: "/", redirect: true });
 }
 
 //===================Register a User========================

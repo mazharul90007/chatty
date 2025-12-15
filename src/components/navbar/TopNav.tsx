@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { Navbar, NavbarBrand, NavbarContent } from "@heroui/navbar";
 import { Button } from "@heroui/button";
 import Link from "next/link";
@@ -5,6 +7,7 @@ import { GiMatchTip } from "react-icons/gi";
 import NavLink from "./NavLink";
 import { auth } from "@/src/auth";
 import UserMenu from "./UserMenu";
+import { signOutUser } from "@/src/app/actions/authActions";
 
 export default async function TopNav() {
   const session = await auth();
@@ -36,7 +39,7 @@ export default async function TopNav() {
       </NavbarContent>
       <NavbarContent justify="end">
         {session?.user ? (
-          <UserMenu user={session.user} />
+          <UserMenu user={session.user} signOutAction={signOutUser} />
         ) : (
           <>
             <Link href={"/login"}>

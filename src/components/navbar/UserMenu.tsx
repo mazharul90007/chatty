@@ -10,14 +10,17 @@ import {
 import { Avatar } from "@heroui/avatar";
 import { Session } from "next-auth";
 import Link from "next/link";
-import { signOutUser } from "@/src/app/actions/authActions";
 import { Button } from "@heroui/button";
+import { useTransition } from "react";
+import { signOutUser } from "@/src/app/actions/authActions";
 
 type Props = {
   user: Session["user"];
+  signOutAction: () => Promise<void>;
 };
 
-export default function UserMenu({ user }: Props) {
+export default function UserMenu({ user, signOutAction }: Props) {
+  const [, startTransition] = useTransition();
   return (
     <Dropdown>
       <DropdownTrigger>
@@ -45,13 +48,13 @@ export default function UserMenu({ user }: Props) {
           <DropdownItem key={"editProfile"}>
             <Link href={"/members/edit"}>Edit Profile</Link>
           </DropdownItem>
-          <form action={signOutUser}>
-            <DropdownItem key={"logout"} color="danger">
-              <Button type="submit" className="w-full text-left">
-                Log Out
-              </Button>
-            </DropdownItem>
-          </form>
+          <DropdownItem
+            key={"logout"}
+            color="danger"
+            onPress={async () => signOutUser()}
+          >
+            LogOut
+          </DropdownItem>
         </DropdownSection>
       </DropdownMenu>
     </Dropdown>
